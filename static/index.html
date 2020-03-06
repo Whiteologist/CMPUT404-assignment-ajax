@@ -6,7 +6,7 @@
     <meta content='width=device-width; height=device-height; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' />
     <meta name="viewport" content="width=device-width" />
     <meta name="license" content="
-        Copyright 2013 Abram Hindle
+        Copyright 2020 Abram Hindle, Jimmy Liang
         
         Licensed under the Apache License, Version 2.0 (the "License");
         you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
     "/>
     <script src="json2.js"></script>
   </head> 
-  <body bgcolor="black" height="100%" width="100%"> 
+  <body bgcolor="white" height="100%" width="100%"> 
     <canvas id="c" width="100%" height="100%" style="-webkit-tap-highlight-color: transparent;"></canvas> 
     <script>
 var canvas = document.getElementById('c');
@@ -71,7 +71,8 @@ function drawCircle(context,entity) {
         //moveTo(x,y);
         fillStyle = entity["colour"];
         strokeStyle = fillStyle;
-        arc(x, y, (entity["radius"])?entity["radius"]:50, 0, 2.0 * Math.PI, false);  
+        arc(x, y, (entity["radius"])?entity["radius"]:20, 0, 2.0 * Math.PI, false);
+        context.fill(); // color the circles drawn
         stroke();                                
     }
 }
@@ -81,7 +82,7 @@ function prepEntity(entity) {
         entity["colour"] = "#FF0000";
     }
     if (!entity["radius"]) {
-        entity["radius"] = 50;
+        entity["radius"] = 20;
     }
     return entity;
 }
@@ -89,7 +90,7 @@ function prepEntity(entity) {
 function clearFrame() {
     with(context) {
 	moveTo(0,0);
-	fillStyle = "#000";
+	fillStyle = "#FFFFFF";
 	fillRect(0,0,W,H);
     }
 
@@ -252,17 +253,48 @@ mouse = (function() {
 
 // Add the application specific mouse listeners!
 //XXX: TODO Make these prettier!
+var rainbow = 0;
+
 mouse.mousedowners.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'blue'});
+    rainbow = 0;
+    addEntityWithoutName({'x':x,'y':y,'colour':'black',
+                          'radius':20});
 });
 
 mouse.mouseuppers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'red'});
+    addEntityWithoutName({'x':x,'y':y,'colour':'black',
+                          'radius':20});
 });
 
 mouse.mousedraggers.push(function(x,y,clicked,e) {
-    addEntityWithoutName({'x':x,'y':y,'colour':'green',
-                          'radius':10});
+    if (rainbow == 0) {
+        addEntityWithoutName({'x':x,'y':y,'colour':'red',
+                              'radius':10});
+    } else if (rainbow == 1 || rainbow == 11) {
+        addEntityWithoutName({'x':x,'y':y,'colour':'orange',
+                              'radius':10});
+    } else if (rainbow == 2 || rainbow == 10) {
+        addEntityWithoutName({'x':x,'y':y,'colour':'yellow',
+                              'radius':10});
+    } else if (rainbow == 3 || rainbow == 9) {
+        addEntityWithoutName({'x':x,'y':y,'colour':'green',
+                              'radius':10});
+    } else if (rainbow == 4 || rainbow == 8) {
+        addEntityWithoutName({'x':x,'y':y,'colour':'blue',
+                              'radius':10});
+    } else if (rainbow == 5 || rainbow == 7) {
+        addEntityWithoutName({'x':x,'y':y,'colour':'indigo',
+                              'radius':10});
+    } else if (rainbow == 6) {
+        addEntityWithoutName({'x':x,'y':y,'colour':'purple',
+                              'radius':10});
+    }
+
+    rainbow += 1;
+    
+    if (rainbow > 11) {
+        rainbow = 0;
+    }
 });
 
 
@@ -272,7 +304,7 @@ function update() {
         world = receive;
         drawNextFrame();
     });
-    
+
     drawFrame();
 }
 
